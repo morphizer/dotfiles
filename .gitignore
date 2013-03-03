@@ -1,0 +1,61 @@
+# git ls-files --others --exclude-from=.git/info/exclude
+#
+# Lines that start with '#' are comments.
+# For a project mostly in C, the following would be a good set of
+# exclude patterns (uncomment them if you want to use them):
+# *.[oa]
+# *~
+
+# Files in my home dir i want to ignore
+.Xauthority
+.bash_history
+.cache/*
+.cmus/*
+.config/aurvote
+.config/google-chrome/*
+.config/gtk-2.0/gtkfilechooser.ini
+.config/smplayer/*
+.dbus/*
+.esd_auth
+.pki/*
+.pulse/*
+.pulse-cookie
+.mozilla/*
+.nv/*
+.viminfo
+Documents/
+ISOs/
+MusicProduction/
+dev/
+.fehbg
+.gtk-bookmarks
+wineprefixes
+.gstreamer-0.10/
+.icedtea/
+.java/
+.mplayer/
+.thumbnails/
+.wine/
+Downloads/
+Steam/
+.gem/
+.nvidia-settings-rc
+.teamviewer/
+.steam/
+.steampath
+.steampid
+.rvm/
+.sane/
+.config/PMS/PMS.conf
+.config/Thunar/
+.config/Trolltech.conf
+.config/audactious
+.config/dconf/
+.config/emelfm2/
+.config/gtk-3.0/
+.config/libfm/
+.config/menus/
+.config/pulse/
+.config/xfburn/
+.config/xfce4/
+.config/audacious/
