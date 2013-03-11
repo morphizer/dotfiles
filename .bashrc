@@ -1,7 +1,3 @@
-#
-# ~/.bashrc
-#
-
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
@@ -23,12 +19,6 @@ shopt -s cdspell # correct spelling errors for cd
 export GREP_OPTIONS='--color=auto' # color for e/z/grep
 export EDITOR
 
-## Sys Commands ##
-alias ll='ls -l'
-alias la='ls -A'
-alias lld='ls -ld'
-alias webs='python -m SimpleHTTPServer'
-
 # Use vim as pager instead of less
 VLESS=$(find /usr/share/vim -name "less.sh")
 if [ ! -z $VLESS ];then
@@ -42,11 +32,21 @@ parse_git_branch() {
 }
 PS1="[\u@\h \W \[\e[1;31m\]\$(parse_git_branch)\[\e[0m\]]\\$ "
 
-## Games ##
-alias wowvanilla='env WINEPREFIX=~/wineprefixes/wowvanilla wine "C:\Program Files\wow\WoW.exe"'
-alias steam='env WINEPREFIX=~/wineprefixes/steam wine "C:\Program Files\Steam\Steam.exe"'
 
-## Fun Aliases ##
-alias persistclock="while sleep 1;do tput sc;tput cup 0 $(($(tput cols)-19));date;tput rc;done &"
+# Source common aliases
+if [ -f ~/.bash_aliases ];then
+    . ~/.bash_aliases
+fi
 
-PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+# Source aliases for home or work
+if [ "$(hostname)" == "jupiter" ];then
+    if [ -f ~/.bash_home_aliases ];then
+        . ~/.bash_home_aliases
+    fi
+elif [ "$(hostname)" == "sdcvp-opsmgmt01" ];then
+    if [ -f ~/.bash_work_aliases ];then
+        . ~/.bash_work_aliases
+    fi
+fi
+
+PATH=$PATH:$HOME/.rvm/bin:$HOME/bin

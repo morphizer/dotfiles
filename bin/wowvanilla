@@ -1,0 +1,2 @@
+#!/bin/bash
+env WINEPREFIX=~/wineprefixes/wowvanilla wine "C:\Program Files\wow\WoW.exe"

@@ -1,0 +1,2 @@
+#!/bin/bash
+env WINEPREFIX=~/wineprefixes/steam/ wine "C:\\Program Files\\Steam\\steam.exe" -no-dwrite
