@@ -50,4 +50,7 @@ elif [ "$(hostname)" == "sdcvp-opsmgmt01" ];then
     fi
 fi
 
+# Change directory colors
+eval $(dircolors -b $HOME/.dircolors)
+
 PATH=$PATH:$HOME/.rvm/bin:$HOME/bin
