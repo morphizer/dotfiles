@@ -38,11 +38,12 @@ if [ -f ~/.bash_aliases ];then
     . ~/.bash_aliases
 fi
 
-# Source aliases for home or work
+# Source stuff depending on home or work
 if [ "$(hostname)" == "jupiter" ];then
     if [ -f ~/.bash_home_aliases ];then
         . ~/.bash_home_aliases
     fi
+    source /usr/share/doc/pkgfile/command-not-found.bash
 elif [ "$(hostname)" == "sdcvp-opsmgmt01" ];then
     if [ -f ~/.bash_work_aliases ];then
         . ~/.bash_work_aliases

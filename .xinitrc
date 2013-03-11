@@ -22,11 +22,7 @@ xset -dpms
 numlockx &
 
 # Random wallpaper rotation
-while true;
-do
-  awsetbg -r /media/moviesmusic/Pictures/Wallpapers
-  sleep 15m
-done &
+set_wallpaper.sh &
 
 # Set Xresources
 [[ -f ~/.Xresources ]] && xrdb -merge ~/.Xresources

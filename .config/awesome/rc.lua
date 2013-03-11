@@ -5,6 +5,7 @@ awful.rules = require("awful.rules")
 require("awful.autofocus")
 -- Widget and layout library
 local wibox = require("wibox")
+local vicious = require("vicious")
 -- Theme handling library
 local beautiful = require("beautiful")
 -- Notification library
@@ -37,13 +38,15 @@ end
 -- }}}
 
 -- {{{ Variable definitions
--- Themes define colours, icons, and wallpapers
-beautiful.init("/usr/share/awesome/themes/default/theme.lua")
+-- Themes define colours, icons
+beautiful.init(os.getenv("HOME") .. "/.config/awesome/themes/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
 terminal = "urxvt"
-editor = os.getenv("EDITOR") or "nano"
+editor = os.getenv("EDITOR") or "vim"
 editor_cmd = terminal .. " -e " .. editor
+file_manager = "pcmanfm"
+browser = "google-chrome"
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
@@ -62,28 +65,23 @@ local layouts =
     awful.layout.suit.tile.top,
     awful.layout.suit.fair,
     awful.layout.suit.fair.horizontal,
-    awful.layout.suit.spiral,
-    awful.layout.suit.spiral.dwindle,
-    awful.layout.suit.max,
-    awful.layout.suit.max.fullscreen,
-    awful.layout.suit.magnifier
+    -- awful.layout.suit.spiral,
+    -- awful.layout.suit.spiral.dwindle,
+    -- awful.layout.suit.max,
+    -- awful.layout.suit.max.fullscreen,
+    -- awful.layout.suit.magnifier
 }
--- }}}
-
--- {{{ Wallpaper
-if beautiful.wallpaper then
-    for s = 1, screen.count() do
-        gears.wallpaper.maximized(beautiful.wallpaper, s, true)
-    end
-end
 -- }}}
 
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
-tags = {}
+tags = {
+    names = { "web", "term", "docs", "media", "files", "other" },
+    layout = { layouts[1], layouts[3], layouts[4], layouts[1], layouts[7], layouts[1] }
+}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
-    tags[s] = awful.tag({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, s, layouts[1])
+    tags[s] = awful.tag(tags.names, s, tags.layout)
 end
 -- }}}
 
@@ -96,12 +94,25 @@ myawesomemenu = {
    { "quit", awesome.quit }
 }
 
+myapps = {
+    { "browser", browser },
+    { "file manager", file_manager }
+}
+
+mygames = {
+    { "steam", "steam" },
+    { "steam-wine", "steam-wine" },
+    { "wowvanilla", "wowvanilla" }
+}
+
 mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesome_icon },
+                                    { "applications", myapps },
+                                    { "games", mygames },
                                     { "open terminal", terminal }
                                   }
                         })
 
-mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
+mylauncher = awful.widget.launcher({ image = beautiful.menu_icon,
                                      menu = mymainmenu })
 
 -- Menubar configuration
@@ -109,8 +120,140 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 -- }}}
 
 -- {{{ Wibox
--- Create a textclock widget
-mytextclock = awful.widget.textclock()
+
+-- {{{ Volume Widget
+local alsawidget =
+{
+    channel = "Master",
+    step = "5%",
+    colors =
+    {
+        unmute = "#AECF96",
+        mute = "#FF5656"
+    },
+    mixer = terminal .. " -e alsamixer", -- or whatever your preferred sound mixer is
+    notifications =
+    {
+        icons =
+        {
+            -- the first item is the 'muted' icon
+            "/usr/share/icons/gnome/48x48/status/audio-volume-muted.png",
+            -- the rest of the items correspond to intermediate volume levels - you can have as many as you want (but must be >= 1)
+            "/usr/share/icons/gnome/48x48/status/audio-volume-low.png",
+            "/usr/share/icons/gnome/48x48/status/audio-volume-medium.png",
+            "/usr/share/icons/gnome/48x48/status/audio-volume-high.png"
+        },
+        font = "Monospace 11", -- must be a monospace font for the bar to be sized consistently
+        icon_size = 48,
+        bar_size = 20 -- adjust to fit your font if the bar doesn't fit
+    }
+}
+-- widget
+alsawidget.bar = awful.widget.progressbar ()
+alsawidget.bar:set_width (8)
+alsawidget.bar:set_vertical (true)
+alsawidget.bar:set_background_color ("#494B4F")
+alsawidget.bar:set_color (alsawidget.colors.unmute)
+alsawidget.bar:buttons (awful.util.table.join (
+    awful.button ({}, 1, function()
+        awful.util.spawn (alsawidget.mixer)
+    end),
+    awful.button ({}, 3, function()
+        awful.util.spawn ("amixer sset " .. alsawidget.channel .. " toggle")
+        vicious.force ({ alsawidget.bar })
+    end),
+    awful.button ({}, 4, function()
+        awful.util.spawn ("amixer sset " .. alsawidget.channel .. " " .. alsawidget.step .. "+")
+        vicious.force ({ alsawidget.bar })
+    end),
+    awful.button ({}, 5, function()
+        awful.util.spawn ("amixer sset " .. alsawidget.channel .. " " .. alsawidget.step .. "-")
+        vicious.force ({ alsawidget.bar })
+    end)
+))
+-- tooltip
+alsawidget.tooltip = awful.tooltip ({ objects = { alsawidget.bar } })
+-- naughty notifications
+alsawidget._current_level = 0
+alsawidget._muted = false
+function alsawidget:notify ()
+    local preset =
+    {
+        height = 75,
+        width = 300,
+        font = alsawidget.notifications.font
+    }
+    local i = 1;
+    while alsawidget.notifications.icons[i + 1] ~= nil
+    do
+        i = i + 1
+    end
+    if i >= 2
+    then
+        preset.icon_size = alsawidget.notifications.icon_size
+        if alsawidget._muted or alsawidget._current_level == 0
+        then
+            preset.icon = alsawidget.notifications.icons[1]
+        elseif alsawidget._current_level == 100
+        then
+            preset.icon = alsawidget.notifications.icons[i]
+        else
+            local int = math.modf (alsawidget._current_level / 100 * (i - 1))
+            preset.icon = alsawidget.notifications.icons[int + 2]
+        end
+    end
+    if alsawidget._muted
+    then
+        preset.title = alsawidget.channel .. " - Muted"
+    elseif alsawidget._current_level == 0
+    then
+        preset.title = alsawidget.channel .. " - 0% (muted)"
+        preset.text = "[" .. string.rep (" ", alsawidget.notifications.bar_size) .. "]"
+    elseif alsawidget._current_level == 100
+    then
+        preset.title = alsawidget.channel .. " - 100% (max)"
+        preset.text = "[" .. string.rep ("|", alsawidget.notifications.bar_size) .. "]"
+    else
+        local int = math.modf (alsawidget._current_level / 100 * alsawidget.notifications.bar_size)
+        preset.title = alsawidget.channel .. " - " .. alsawidget._current_level .. "%"
+        preset.text = "[" .. string.rep ("|", int) .. string.rep (" ", alsawidget.notifications.bar_size - int) .. "]"
+    end
+    if alsawidget._notify ~= nil
+    then
+        
+        alsawidget._notify = naughty.notify (
+        {
+            replaces_id = alsawidget._notify.id,
+            preset = preset
+        })
+    else
+        alsawidget._notify = naughty.notify ({ preset = preset })
+    end
+end
+-- register the widget through vicious
+vicious.register (alsawidget.bar, vicious.widgets.volume, function (widget, args)
+    alsawidget._current_level = args[1]
+    if args[2] == "♩"
+    then
+        alsawidget._muted = true
+        alsawidget.tooltip:set_text (" [Muted] ")
+        widget:set_color (alsawidget.colors.mute)
+        return 100
+    end
+    alsawidget._muted = false
+    alsawidget.tooltip:set_text (" " .. alsawidget.channel .. ": " .. args[1] .. "% ")
+    widget:set_color (alsawidget.colors.unmute)
+    return args[1]
+end, 5, alsawidget.channel) -- relatively high update time, use of keys/mouse will force update
+-- }}}
+
+-- Date/Clock widget
+date_widget = wibox.widget.textbox()
+vicious.register(date_widget, vicious.widgets.date, "%d.%m.%Y <b>%R</b>")
+
+--Seperator
+space = wibox.widget.textbox()
+space:set_text(" ")
 
 -- Create a wibox for each screen and add it
 mywibox = {}
@@ -183,13 +326,21 @@ for s = 1, screen.count() do
     -- Widgets that are aligned to the left
     local left_layout = wibox.layout.fixed.horizontal()
     left_layout:add(mylauncher)
+    left_layout:add(space)
     left_layout:add(mytaglist[s])
     left_layout:add(mypromptbox[s])
 
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
+    right_layout:add(space)
+
+    right_layout:add(alsawidget.bar)
+
+    right_layout:add(space)
+
     if s == 1 then right_layout:add(wibox.widget.systray()) end
-    right_layout:add(mytextclock)
+
+    right_layout:add(date_widget)
     right_layout:add(mylayoutbox[s])
 
     -- Now bring it all together (with the tasklist in the middle)
@@ -349,6 +500,8 @@ awful.rules.rules = {
                      focus = awful.client.focus.filter,
                      keys = clientkeys,
                      buttons = clientbuttons } },
+    { rule = { class = "urxvt" },
+      properties = { size_hints_honor = false } },
     { rule = { class = "MPlayer" },
       properties = { floating = true } },
     { rule = { class = "pinentry" },
@@ -425,4 +578,8 @@ end)
 
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+-- }}}
+
+-- {{{ Folding for Vim
+-- vim:foldmethod=marker
 -- }}}

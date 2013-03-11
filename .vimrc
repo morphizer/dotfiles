@@ -64,3 +64,7 @@ set pastetoggle=<F11>
 " Window splitting
 set splitbelow
 set splitright
+
+" Fold mappings
+nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
+vnoremap <Space> zf
