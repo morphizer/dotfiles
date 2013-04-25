@@ -1,4 +1,16 @@
-call pathogen#infect()
+set nocompatible
+filetype off
+
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+
+" Vundle stuff
+Bundle 'gmarik/vundle'
+
+Bundle 'godlygeek/tabular'
+Bundle 'rodjek/vim-puppet'
+Bundle 'msanders/snipmate.vim'
+Bundle 'scrooloose/syntastic'
 
 syntax on
 

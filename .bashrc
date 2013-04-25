@@ -6,7 +6,7 @@ if [ -f /etc/bashrc ];then
 	. /etc/bashrc
 fi
 
-EDITOR="VIM"
+EDITOR="vim"
 
 # History settings
 HISTCONTROL=ignoreboth #ignoredups and ignorespace
