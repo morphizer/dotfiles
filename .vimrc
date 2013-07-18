@@ -73,6 +73,9 @@ set undolevels=1000
 map <F2> :set invpaste<cr>
 set pastetoggle=<F11>
 
+" Mouse support
+set mouse=a
+
 " Window splitting
 set splitbelow
 set splitright

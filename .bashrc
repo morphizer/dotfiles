@@ -9,7 +9,11 @@ fi
 EDITOR="vim"
 
 # History settings
+shopt -s histappend
 HISTCONTROL=ignoreboth #ignoredups and ignorespace
+HISTFILE="${HOME}/.bash_history.$(hostname)"
+HISTIGNORE="pwd:ls:ls -l:ls -la:ls -ltr:history"
+HISTTIMEFORMAT='%F %T '
 HISTFILESIZE=1000000
 HISTSIZE=10000
 
@@ -25,13 +29,39 @@ if [ ! -z $VLESS ];then
     alias less=$VLESS
 fi
 
-# Prompt
-parse_git_branch() {
-	local b=$(git symbolic-ref HEAD 2> /dev/null)
-	echo -n "${b#refs/heads/}"
-}
-PS1="[\u@\h \W \[\e[1;31m\]\$(parse_git_branch)\[\e[0m\]]\\$ "
+# Make sure there is a folder available for ssh control sessions
+if [ ! -d "~/.ssh/control" ];then
+    mkdir -p ~/.ssh/control
+fi
 
+# Prompt
+function _prompt_command() {
+    local EXIT="$?"
+
+    local Clear='\[\e[0m\]'
+    local LightBlue='\[\e[36m\]'
+    local Yellow='\[\e[33m\]'
+    local Red='\[\e[31m\]'
+    local Green='\[\e[32m\]'
+
+    if [ $EXIT != 0 ]; then
+        local face="${Red}:(${Clear}"
+    else
+        local face="${Green}:)${Clear}"
+    fi
+
+    local branch=$(git symbolic-ref HEAD 2> /dev/null)
+    local branch="${Yellow}${branch#refs/heads/}"
+
+	echo -n "${b#refs/heads/}"
+    history -a 
+    history -c 
+    history -r
+    
+    PS1="\u@${Yellow}\h${Clear}:${LightBlue}[\w]${Clear} ${branch} ${face} \$ "
+}
+export PROMPT_COMMAND=_prompt_command
+export PROMPT_DIRTRIM=3
 
 # Source common aliases
 if [ -f ~/.bash_aliases ];then
@@ -44,7 +74,7 @@ if [ "$(hostname)" == "jupiter" ];then
         . ~/.bash_home_aliases
     fi
     source /usr/share/doc/pkgfile/command-not-found.bash
-elif [ "$(hostname)" == "sdcvp-opsmgmt01" ];then
+elif [ "$(hostname)" == "aharley-MacBookPro" ];then
     if [ -f ~/.bash_work_aliases ];then
         . ~/.bash_work_aliases
     fi
