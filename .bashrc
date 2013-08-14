@@ -50,8 +50,10 @@ function _prompt_command() {
         local face="${Green}:)${Clear}"
     fi
 
-    local branch=$(git symbolic-ref HEAD 2> /dev/null)
-    local branch="${Yellow}${branch#refs/heads/}"
+    if git symbolic-ref HEAD > /dev/null 2>&1;then
+        local branch=$(git symbolic-ref HEAD)
+        local branch="${Yellow}${branch#refs/heads/} "
+    fi
 
     echo -n "${b#refs/heads/}"
 
@@ -65,7 +67,7 @@ function _prompt_command() {
         local remote_stuff="\u@${Yellow}\h${Clear}:"
     fi
     
-    PS1="${remote_stuff}${LightBlue}[\w]${Clear} ${branch} ${face} \$ "
+    PS1="${remote_stuff}${LightBlue}[\w]${Clear} ${branch}${face} \$ "
 }
 export PROMPT_COMMAND=_prompt_command
 export PROMPT_DIRTRIM=3
