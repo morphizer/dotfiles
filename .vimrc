@@ -12,6 +12,7 @@ Bundle 'rodjek/vim-puppet'
 Bundle 'msanders/snipmate.vim'
 Bundle 'scrooloose/syntastic'
 Bundle 'myusuf3/numbers.vim'
+Bundle 'jakar/vim-json'
 
 syntax on
 

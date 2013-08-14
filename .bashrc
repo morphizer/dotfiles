@@ -80,7 +80,17 @@ elif [ "$(hostname)" == "aharley-MacBookPro" ];then
     fi
 fi
 
+# Add AWS command completion
+if [ -x $(which aws_completer) ];then
+  complete -C aws_completer aws
+fi
+
 # Change directory colors
 eval $(dircolors -b $HOME/.dircolors)
 
+
+### Added by rvm
 PATH=$PATH:$HOME/.rvm/bin:$HOME/bin
+
+### Added by the Heroku Toolbelt
+export PATH="/usr/local/heroku/bin:$PATH"
