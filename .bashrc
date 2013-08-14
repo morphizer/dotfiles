@@ -55,8 +55,6 @@ function _prompt_command() {
         local branch="${Yellow}${branch#refs/heads/} "
     fi
 
-    echo -n "${b#refs/heads/}"
-
     if [[ $(echo "$(echo ${BASH_VERSION} | cut -d '.' -f 1-2) >= 4.2" | bc) -eq 1 ]];then
         history -a 
         history -c 
