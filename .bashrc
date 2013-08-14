@@ -54,12 +54,15 @@ function _prompt_command() {
     local branch="${Yellow}${branch#refs/heads/}"
 
     echo -n "${b#refs/heads/}"
-    history -a 
-    history -c 
-    history -r
+
+    if [[ $(echo "$(echo ${BASH_VERSION} | cut -d '.' -f 1-2) >= 4.2" | bc) -eq 1 ]];then
+        history -a 
+        history -c 
+        history -r
+    fi
 
     if [[ ! -z $SSH_CONNECTION ]];then
-      local remote_stuff="\u@${Yellow}\h${Clear}:"
+        local remote_stuff="\u@${Yellow}\h${Clear}:"
     fi
     
     PS1="${remote_stuff}${LightBlue}[\w]${Clear} ${branch} ${face} \$ "
@@ -86,7 +89,7 @@ fi
 
 # Add AWS command completion
 if [ -x $(which aws_completer) ];then
-  complete -C aws_completer aws
+    complete -C aws_completer aws
 fi
 
 # Change directory colors
