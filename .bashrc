@@ -53,12 +53,16 @@ function _prompt_command() {
     local branch=$(git symbolic-ref HEAD 2> /dev/null)
     local branch="${Yellow}${branch#refs/heads/}"
 
-	echo -n "${b#refs/heads/}"
+    echo -n "${b#refs/heads/}"
     history -a 
     history -c 
     history -r
+
+    if [[ ! -z $SSH_CONNECTION ]];then
+      local remote_stuff="\u@${Yellow}\h${Clear}:"
+    fi
     
-    PS1="\u@${Yellow}\h${Clear}:${LightBlue}[\w]${Clear} ${branch} ${face} \$ "
+    PS1="${remote_stuff}${LightBlue}[\w]${Clear} ${branch} ${face} \$ "
 }
 export PROMPT_COMMAND=_prompt_command
 export PROMPT_DIRTRIM=3
