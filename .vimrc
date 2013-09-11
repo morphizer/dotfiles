@@ -13,6 +13,7 @@ Bundle 'msanders/snipmate.vim'
 Bundle 'scrooloose/syntastic'
 Bundle 'myusuf3/numbers.vim'
 Bundle 'jakar/vim-json'
+Bundle 'scrooloose/nerdtree'
 
 syntax on
 
@@ -85,3 +86,10 @@ set splitright
 " Fold mappings
 nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
 vnoremap <Space> zf
+
+" Quit NERDTree and open file
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+"autocmd VimEnter * NERDTree
+autocmd VimEnter * if !argc() | NERDTree | endif
+autocmd VimEnter * wincmd p
+map <C-n> :NERDTreeToggle<CR>
