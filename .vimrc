@@ -11,7 +11,6 @@ Bundle 'godlygeek/tabular'
 Bundle 'rodjek/vim-puppet'
 Bundle 'msanders/snipmate.vim'
 Bundle 'scrooloose/syntastic'
-Bundle 'myusuf3/numbers.vim'
 Bundle 'jakar/vim-json'
 Bundle 'scrooloose/nerdtree'
 
@@ -54,8 +53,7 @@ if exists("+colorcolumn")
     set colorcolumn=+1
 endif
 
-"set statusline=%<\ %n:%f\ %m%r%y%=%-35.(line:\ %l\ of\ %L,\ col:\ %c%V\(%P)%)
-:set statusline=%<%f\ (%{&ft})\ %-4(%m%)%=%-19(%3l,%02c%03V%)
+set statusline=%<%f\ (%{&ft})\ %-4(%m%)%=%-19(%3l,%02c%03V%)
 
 " Show status line and cursor position
 set laststatus=2
@@ -93,3 +91,5 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTree
 autocmd VimEnter * if !argc() | NERDTree | endif
 autocmd VimEnter * wincmd p
 map <C-n> :NERDTreeToggle<CR>
+
+let NERDTreeShowLineNumbers=0
