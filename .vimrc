@@ -11,7 +11,7 @@ Bundle 'godlygeek/tabular'
 Bundle 'rodjek/vim-puppet'
 Bundle 'msanders/snipmate.vim'
 Bundle 'scrooloose/syntastic'
-Bundle 'jakar/vim-json'
+Bundle 'elzr/vim-json'
 Bundle 'scrooloose/nerdtree'
 
 syntax on
@@ -74,9 +74,6 @@ set undolevels=1000
 map <F2> :set invpaste<cr>
 set pastetoggle=<F11>
 
-" Mouse support
-set mouse=a
-
 " Window splitting
 set splitbelow
 set splitright
@@ -93,3 +90,9 @@ autocmd VimEnter * wincmd p
 map <C-n> :NERDTreeToggle<CR>
 
 let NERDTreeShowLineNumbers=0
+
+" vim-json hides quotes, but i dont like this
+"let g:vim_json_syntax_conceal = 0
+" add folding support for {...} and [...]
+setlocal foldmethod=syntax
+setlocal foldlevelstart=20
