@@ -101,3 +101,6 @@ PATH=$PATH:$HOME/.rvm/bin:$HOME/bin
 
 ### Added by the Heroku Toolbelt
 export PATH="/usr/local/heroku/bin:$PATH"
+
+### Added by me
+export PATH="$HOME/pgsql/bin:$PATH"

@@ -13,6 +13,9 @@ Bundle 'msanders/snipmate.vim'
 Bundle 'scrooloose/syntastic'
 Bundle 'elzr/vim-json'
 Bundle 'scrooloose/nerdtree'
+Bundle 'vim-scripts/nagios-syntax'
+Bundle 'jamessan/vim-gnupg'
+Bundle 'Keithbsmiley/investigate.vim'
 
 syntax on
 
